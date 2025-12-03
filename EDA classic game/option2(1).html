@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDA Games Arcade</title>
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+        /* Extra arcade styling on top of your existing style.css */
+        .nav-table td {
+            padding: 0 10px;
+        }
+        .arcade-container {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .game-card {
+            border: 1px solid #58fb00;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .game-card h2 {
+            margin: 0 0 8px 0;
+            color: #58fb00;
+        }
+        .game-desc {
+            color: #059905;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #58fb00;
+            color: #58fb00;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            background-color: #58fb00;
+            color: #000000;
+        }
+    </style>
+</head>
+<body id="background-color">
+    <h1 id="header">EDA Games – Web Arcade Store</h1>
+
+    <!-- Top nav -->
+    <table align="center" class="nav-table">
+        <tr>
+            <td align="center" id="text-color"><a href="option2.html">Home</a></td>
+            <td align="center" id="text-color"><a href="admin.html">Login</a></td>
+            <td align="center" id="text-color"><a href="signup.html">Sign up</a></td>
+        </tr>
+    </table>
+
+    <div class="arcade-container">
+        <p id="text-color" style="text-align:center;">
+            Play simple games directly in your browser, or download the HTML files
+            if you want to keep your own copy.
+        </p>
+
+        <!-- Connect 4 -->
+        <div class="game-card">
+            <h2>Connect 4 – Grid vs CPU</h2>
+            <p class="game-desc">
+                Drop your discs into a 6×7 grid and try to connect four in a row
+                (horizontal, vertical, or diagonal) against the CPU.
+            </p>
+            <a class="btn" href="classicgames/connect4.html" target="_blank">Play Connect 4</a>
+            <a class="btn" href="classicgames/connect4.html" download>Download Connect 4 (HTML)</a>
+        </div>
+
+        <!-- Pac-Man -->
+        <div class="game-card">
+            <h2>Pac-Man – Mini Maze</h2>
+            <p class="game-desc">
+                Move with the arrow keys, eat all the dots, and avoid the ghost.
+                Your best score is saved in your browser.
+            </p>
+            <a class="btn" href="classicgames/pacman.html" target="_blank">Play Pac-Man</a>
+            <a class="btn" href="classicgames/pacman.html" download>Download Pac-Man (HTML)</a>
+        </div>
+
+        <!-- Hangman -->
+        <div class="game-card">
+            <h2>Hangman – Sentence Edition</h2>
+            <p class="game-desc">
+                Guess the hidden sentence one letter at a time. Includes multiple
+                phrases and an ASCII hangman that appears as you guess wrong.
+            </p>
+            <a class="btn" href="classicgames/hangman.html" target="_blank">Play Hangman</a>
+            <a class="btn" href="classicgames/hangman.html" download>Download Hangman (HTML)</a>
+        </div>
+
+        <!-- Tic-Tac-Toe -->
+        <div class="game-card">
+            <h2>Tic-Tac-Toe vs CPU</h2>
+            <p class="game-desc">
+                Classic 3×3 Tic-Tac-Toe against a computer opponent. Try to get
+                three in a row before the CPU does.
+            </p>
+            <a class="btn" href="classicgames/tictactoe.html" target="_blank">Play Tic-Tac-Toe</a>
+            <a class="btn" href="classicgames/tictactoe.html" download>Download Tic-Tac-Toe (HTML)</a>
+        </div>
+
+        <!-- Rock–Paper–Scissors -->
+        <div class="game-card">
+            <h2>Rock – Paper – Scissors</h2>
+            <p class="game-desc">
+                Pick rock, paper, or scissors and battle the CPU. Tracks your wins,
+                losses, and ties in the browser.
+            </p>
+            <a class="btn" href="classicgames/rps.html" target="_blank">Play Rock–Paper–Scissors</a>
+            <a class="btn" href="classicgames/rps.html" download>Download RPS (HTML)</a>
+        </div>
+
+        <!-- Blackjack -->
+        <div class="game-card">
+            <h2>Blackjack with Betting</h2>
+            <p class="game-desc">
+                Start with a stack of chips, place your bet, and hit or stand against
+                the dealer to see how high you can run your money.
+            </p>
+            <a class="btn" href="classicgames/blackjack.html" target="_blank">Play Blackjack</a>
+            <a class="btn" href="classicgames/blackjack.html" download>Download Blackjack (HTML)</a>
+        </div>
+    </div>
+
+    <p style="text-align:center;">
+        <a class="btn" href="highscores.html">View High Scores / Stats</a>
+    </p>
+
+</body>
+</html>
+

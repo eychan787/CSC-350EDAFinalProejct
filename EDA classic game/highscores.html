@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game High Scores</title>
+    <style>
+        body {
+            background: #000;
+            color: #58fb00;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        .card {
+            border: 1px solid #58fb00;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+        .card h2 {
+            margin: 0 0 6px 0;
+        }
+        .label {
+            color: #9eff9e;
+        }
+        a {
+            color: #58fb00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game High Scores / Stats</h1>
+    <!-- send them back to the arcade page -->
+    <p><a href="option2(1).html">Back to Arcade</a></p>
+
+    <div class="container">
+        <div class="card">
+            <h2>Hangman – Sentence Edition</h2>
+            <p><span class="label">Wins:</span> <span id="hs-hangman-wins">0</span></p>
+            <p><span class="label">Losses:</span> <span id="hs-hangman-losses">0</span></p>
+        </div>
+
+        <div class="card">
+            <h2>Pac-Man – Mini Maze</h2>
+            <p><span class="label">Highest Score:</span> <span id="hs-pacman-high">0</span></p>
+        </div>
+
+        <div class="card">
+            <h2>Blackjack with Betting</h2>
+            <p><span class="label">Max Chips Reached:</span> <span id="hs-blackjack-maxchips">100</span></p>
+        </div>
+
+        <div class="card">
+            <h2>Rock – Paper – Scissors</h2>
+            <p><span class="label">Your Wins:</span> <span id="hs-rps-player">0</span></p>
+            <p><span class="label">CPU Wins:</span> <span id="hs-rps-cpu">0</span></p>
+            <p><span class="label">Ties:</span> <span id="hs-rps-ties">0</span></p>
+        </div>
+
+        <div class="card">
+            <h2>Tic-Tac-Toe vs CPU</h2>
+            <p><span class="label">Your Wins:</span> <span id="hs-ttt-player">0</span></p>
+            <p><span class="label">CPU Wins:</span> <span id="hs-ttt-cpu">0</span></p>
+            <p><span class="label">Ties:</span> <span id="hs-ttt-ties">0</span></p>
+        </div>
+
+        <div class="card">
+            <h2>Connect 4 vs CPU</h2>
+            <p><span class="label">Your Wins:</span> <span id="hs-c4-player">0</span></p>
+            <p><span class="label">CPU Wins:</span> <span id="hs-c4-cpu">0</span></p>
+            <p><span class="label">Ties:</span> <span id="hs-c4-ties">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        function getInt(key, defVal) {
+            const v = localStorage.getItem(key);
+            return v !== null ? parseInt(v, 10) : defVal;
+        }
+
+        // Hangman
+        document.getElementById("hs-hangman-wins").textContent   = getInt("hangman_wins", 0);
+        document.getElementById("hs-hangman-losses").textContent = getInt("hangman_losses", 0);
+
+        // Pac-Man (matches pacman.html using localStorage.setItem("pacmanHigh", highScore))
+        document.getElementById("hs-pacman-high").textContent    = getInt("pacmanHigh", 0);
+
+        // Blackjack
+        document.getElementById("hs-blackjack-maxchips").textContent = getInt("blackjack_maxChips", 100);
+
+        // RPS
+        document.getElementById("hs-rps-player").textContent = getInt("rps_playerWins", 0);
+        document.getElementById("hs-rps-cpu").textContent    = getInt("rps_cpuWins", 0);
+        document.getElementById("hs-rps-ties").textContent   = getInt("rps_ties", 0);
+
+        // Tic-Tac-Toe
+        document.getElementById("hs-ttt-player").textContent = getInt("ttt_playerWins", 0);
+        document.getElementById("hs-ttt-cpu").textContent    = getInt("ttt_cpuWins", 0);
+        document.getElementById("hs-ttt-ties").textContent   = getInt("ttt_ties", 0);
+
+        // Connect 4
+        document.getElementById("hs-c4-player").textContent = getInt("c4_playerWins", 0);
+        document.getElementById("hs-c4-cpu").textContent    = getInt("c4_cpuWins", 0);
+        document.getElementById("hs-c4-ties").textContent   = getInt("c4_ties", 0);
+    </script>
+</body>
+</html>
