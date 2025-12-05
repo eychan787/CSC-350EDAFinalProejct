@@ -25,7 +25,8 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $user, $email, $pass);
 
 if ($stmt->execute()) {
-    echo "User created! <a href='login.html'>Login here</a>";
+    echo "User created!";
+    header("Location: login.html");
 } else {
     echo "Error: " . $stmt->error;
 }

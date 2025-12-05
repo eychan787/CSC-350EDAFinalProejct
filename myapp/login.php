@@ -28,7 +28,7 @@ if ($result->num_rows === 1) {
         if ($user['is_admin'] == 1) {
             header("Location: admin.php");
         } else {
-            header("Location: user_dashboard.php");
+            header("Location: userhomepage.html");
         }
         exit;
 

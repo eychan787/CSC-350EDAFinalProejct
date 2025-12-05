@@ -71,6 +71,8 @@ $result = $conn->query("SELECT id, username, email, is_admin, created_at FROM us
 <br>
 <div style="text-align:center;">
     <a href="logout.php">Log Out</a>
+    <a href="userhomepage.html">Home</a>
+    <a href="reviews.php" style="margin-left:20px;">Reviews</a>
 </div>
 
 </body>
