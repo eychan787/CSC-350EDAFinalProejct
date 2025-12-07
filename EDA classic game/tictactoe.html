@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic-Tac-Toe vs CPU</title>
+    <style>
+        body {
+            background: hsl(0, 0%, 6%);
+            color: #56fa03;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #board {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        #board td {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #58fb00;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #58fb00;
+            background: #000;
+            color: #58fb00;
+            cursor: pointer;
+        }
+        .scoreboard {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe vs CPU</h1>
+    <div>You are: <strong>X</strong> · CPU is: <strong>O</strong></div>
+
+    <table id="board">
+        <tbody>
+            <tr>
+                <td data-row="0" data-col="0"></td>
+                <td data-row="0" data-col="1"></td>
+                <td data-row="0" data-col="2"></td>
+            </tr>
+            <tr>
+                <td data-row="1" data-col="0"></td>
+                <td data-row="1" data-col="1"></td>
+                <td data-row="1" data-col="2"></td>
+            </tr>
+            <tr>
+                <td data-row="2" data-col="0"></td>
+                <td data-row="2" data-col="1"></td>
+                <td data-row="2" data-col="2"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div id="status"></div>
+
+    <div class="scoreboard">
+        You (X) Wins: <span id="playerWins">0</span> |
+        CPU (O) Wins: <span id="cpuWins">0</span> |
+        Ties: <span id="ties">0</span>
+    </div>
+
+    <button onclick="resetBoard()">New Game</button>
+
+<p><a href="option2(1).html">⬅ Back to Arcade</a></p>
+
+    <script>
+        let board = [
+            ["", "", ""],
+            ["", "", ""],
+            ["", "", ""]
+        ];
+        let gameOver = false;
+        let playerWins = 0;
+        let cpuWins = 0;
+        let ties = 0;
+
+        const statusEl = document.getElementById("status");
+        const playerWinsEl = document.getElementById("playerWins");
+        const cpuWinsEl = document.getElementById("cpuWins");
+        const tiesEl = document.getElementById("ties");
+        const cells = document.querySelectorAll("#board td");
+
+        // Player (X) clicks
+        cells.forEach(cell => {
+            cell.addEventListener("click", () => {
+                if (gameOver) return;
+                const row = parseInt(cell.getAttribute("data-row"));
+                const col = parseInt(cell.getAttribute("data-col"));
+                handlePlayerMove(row, col, cell);
+            });
+        });
+
+        function handlePlayerMove(row, col, cell) {
+            if (board[row][col] !== "" || gameOver) return;
+
+            board[row][col] = "X";
+            cell.textContent = "X";
+
+            if (checkWin("X")) {
+                statusEl.textContent = "You win!";
+                gameOver = true;
+                playerWins++;
+                updateScores();
+                return;
+            }
+
+            if (isBoardFull()) {
+                statusEl.textContent = "It's a tie!";
+                gameOver = true;
+                ties++;
+                updateScores();
+                return;
+            }
+
+            // CPU turn
+            cpuMove();
+        }
+
+        function cpuMove() {
+            if (gameOver) return;
+
+            const move = getBestCpuMove();
+            if (!move) return; // safety
+
+            const { r, c } = move;
+            board[r][c] = "O";
+
+            // update cell UI
+            const cell = document.querySelector(`#board td[data-row="${r}"][data-col="${c}"]`);
+            if (cell) cell.textContent = "O";
+
+            if (checkWin("O")) {
+                statusEl.textContent = "CPU wins!";
+                gameOver = true;
+                cpuWins++;
+                updateScores();
+                return;
+            }
+
+            if (isBoardFull()) {
+                statusEl.textContent = "It's a tie!";
+                gameOver = true;
+                ties++;
+                updateScores();
+                return;
+            }
+
+            statusEl.textContent = "";
+        }
+
+        function getBestCpuMove() {
+            const available = getAvailableMoves();
+
+            // 1) CPU winning move?
+            for (const move of available) {
+                const { r, c } = move;
+                board[r][c] = "O";
+                if (checkWin("O")) {
+                    board[r][c] = ""; // undo
+                    return move;
+                }
+                board[r][c] = "";
+            }
+
+            // 2) Block player's winning move?
+            for (const move of available) {
+                const { r, c } = move;
+                board[r][c] = "X";
+                if (checkWin("X")) {
+                    board[r][c] = ""; // undo
+                    return move;
+                }
+                board[r][c] = "";
+            }
+
+            // 3) Take center if free
+            if (board[1][1] === "") {
+                return { r: 1, c: 1 };
+            }
+
+            // 4) Take a corner if free
+            const corners = [
+                { r: 0, c: 0 },
+                { r: 0, c: 2 },
+                { r: 2, c: 0 },
+                { r: 2, c: 2 }
+            ];
+            const freeCorners = corners.filter(m => board[m.r][m.c] === "");
+            if (freeCorners.length > 0) {
+                return freeCorners[Math.floor(Math.random() * freeCorners.length)];
+            }
+
+            // 5) Otherwise random available move
+            if (available.length > 0) {
+                return available[Math.floor(Math.random() * available.length)];
+            }
+
+            return null;
+        }
+
+        function getAvailableMoves() {
+            const moves = [];
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (board[r][c] === "") moves.push({ r, c });
+                }
+            }
+            return moves;
+        }
+
+        function checkWin(player) {
+            // rows
+            for (let r = 0; r < 3; r++) {
+                if (board[r][0] === player &&
+                    board[r][1] === player &&
+                    board[r][2] === player) return true;
+            }
+            // cols
+            for (let c = 0; c < 3; c++) {
+                if (board[0][c] === player &&
+                    board[1][c] === player &&
+                    board[2][c] === player) return true;
+            }
+            // diagonals
+            if (board[0][0] === player &&
+                board[1][1] === player &&
+                board[2][2] === player) return true;
+            if (board[0][2] === player &&
+                board[1][1] === player &&
+                board[2][0] === player) return true;
+
+            return false;
+        }
+
+        function isBoardFull() {
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (board[r][c] === "") return false;
+                }
+            }
+            return true;
+        }
+
+        function resetBoard() {
+            board = [
+                ["", "", ""],
+                ["", "", ""],
+                ["", "", ""]
+            ];
+            gameOver = false;
+            statusEl.textContent = "";
+            cells.forEach(cell => cell.textContent = "");
+        }
+
+        function updateScores() {
+            playerWinsEl.textContent = playerWins;
+            cpuWinsEl.textContent = cpuWins;
+            tiesEl.textContent = ties;
+        }
+    </script>
+</body>
+</html>

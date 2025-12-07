@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pac-Man – Arcade</title>
+    <style>
+        body {
+            background: #000;
+            color: #ffeb3b;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 10px;
+        }
+        #gameContainer {
+            margin: 10px auto;
+            width: max-content;
+            border: 3px solid #ffeb3b;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        canvas {
+            background: #000020;
+            display: block;
+        }
+        #info {
+            margin-top: 10px;
+        }
+        a, a:visited {
+            color: #0f0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Pac-Man</h1>
+<p>Use ↑ ↓ ← → to move. Eat all the dots. Avoid the ghost!</p>
+
+<div id="gameContainer">
+    <canvas id="game"></canvas>
+</div>
+
+<div id="info">
+    <p>Score: <span id="score">0</span> | Lives: <span id="lives">3</span></p>
+    <p>High Score: <span id="high">0</span></p>
+    <p><a href="option2(1).html">⬅ Back to Arcade</a></p>
+    <p><a href="pacman.html" download>⬇ Download this Pac-Man game</a></p>
+</div>
+
+<script>
+// --- CONFIG ---
+const tileSize = 24;
+
+// Map legend:
+// # = wall
+// . = dot
+// ' ' = empty
+// P = player start
+// G = ghost start
+const mapLayout = [
+    "###################",
+    "#P......#........G#",
+    "#.###.#.#.####.#..#",
+    "#.....#.#......#..#",
+    "###.#.###.##.#.####",
+    "#...#.....##.#....#",
+    "#.#.#####.##.###..#",
+    "#.#..............#",
+    "#.####.######.####",
+    "#......#....#....#",
+    "####.#.#.##.#.#.##",
+    "#....#.#....#.#..#",
+    "#.####.####.#.##.#",
+    "#......#........#",
+    "###################"
+];
+
+const rows = mapLayout.length;
+const cols = mapLayout[0].length;
+
+const canvas = document.getElementById("game");
+canvas.width = cols * tileSize;
+canvas.height = rows * tileSize;
+const ctx = canvas.getContext("2d");
+
+let score = 0;
+let lives = 3;
+let highScore = Number(localStorage.getItem("pacmanHigh") || 0);
+document.getElementById("high").textContent = highScore;
+
+let dotsLeft = 0;
+
+// Player & ghost objects
+let player = { row: 0, col: 0, dir: {r: 0, c: 0} };
+let ghost = { row: 0, col: 0, dir: {r: 0, c: 0}, moveCounter: 0 };
+
+let gameOver = false;
+
+// Build map from layout & find start positions
+let map = [];
+for (let r = 0; r < rows; r++) {
+    map[r] = [];
+    for (let c = 0; c < cols; c++) {
+        const ch = mapLayout[r][c];
+        if (ch === "P") {
+            player.row = r;
+            player.col = c;
+            map[r][c] = " ";
+        } else if (ch === "G") {
+            ghost.row = r;
+            ghost.col = c;
+            map[r][c] = " ";
+        } else {
+            map[r][c] = ch;
+            if (ch === ".") dotsLeft++;
+        }
+    }
+}
+
+// Input
+window.addEventListener("keydown", e => {
+    if (gameOver) return;
+    if (e.key === "ArrowUp") player.dir = {r: -1, c: 0};
+    if (e.key === "ArrowDown") player.dir = {r: 1, c: 0};
+    if (e.key === "ArrowLeft") player.dir = {r: 0, c: -1};
+    if (e.key === "ArrowRight") player.dir = {r: 0, c: 1};
+});
+
+// Helpers
+function isWall(r, c) {
+    if (r < 0 || r >= rows || c < 0 || c >= cols) return true;
+    return map[r][c] === "#";
+}
+
+    let playerMoveCounter = 0;
+
+function movePlayer() {
+    playerMoveCounter++;
+    if (playerMoveCounter % 6 !== 0) return; // ← slows movement
+
+    const nr = player.row + player.dir.r;
+    const nc = player.col + player.dir.c;
+    
+    if (!isWall(nr, nc)) {
+        player.row = nr;
+        player.col = nc;
+
+        // Eat dot
+        if (map[nr][nc] === ".") {
+            map[nr][nc] = " ";
+            score += 10;
+            dotsLeft--;
+            document.getElementById("score").textContent = score;
+
+            if (dotsLeft === 0) {
+                winGame();
+            }
+        }
+    }
+}
+
+function randomGhostDir() {
+    const dirs = [
+        {r: -1, c: 0},
+        {r: 1, c: 0},
+        {r: 0, c: -1},
+        {r: 0, c: 1}
+    ];
+    // Try several random directions until a non-wall is found
+    for (let i = 0; i < 10; i++) {
+        const d = dirs[Math.floor(Math.random() * dirs.length)];
+        const nr = ghost.row + d.r;
+        const nc = ghost.col + d.c;
+        if (!isWall(nr, nc)) return d;
+    }
+    return {r: 0, c: 0};
+}
+
+let ghostMoveCounter = 0;
+
+function moveGhost() {
+    ghostMoveCounter++;
+    if (ghostMoveCounter % 10 !== 0) return;  // ← slows ghost
+    
+    ghost.moveCounter++;
+    
+    if (ghost.moveCounter % 4 === 0) {
+        // Occasionally pick a new direction
+        ghost.dir = randomGhostDir();
+    }
+    const nr = ghost.row + ghost.dir.r;
+    const nc = ghost.col + ghost.dir.c;
+    if (!isWall(nr, nc)) {
+        ghost.row = nr;
+        ghost.col = nc;
+    } else {
+        ghost.dir = randomGhostDir();
+    }
+}
+
+
+function checkCollision() {
+    if (player.row === ghost.row && player.col === ghost.col) {
+        lives--;
+        document.getElementById("lives").textContent = lives;
+        if (lives <= 0) {
+            endGame(false);
+        } else {
+            // Reset positions
+            resetPositions();
+        }
+    }
+}
+
+function resetPositions() {
+    // Re-scan starting positions from layout
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (mapLayout[r][c] === "P") {
+                player.row = r;
+                player.col = c;
+                player.dir = {r: 0, c: 0};
+            }
+            if (mapLayout[r][c] === "G") {
+                ghost.row = r;
+                ghost.col = c;
+                ghost.dir = {r: 0, c: 0};
+            }
+        }
+    }
+}
+
+function endGame(won) {
+    gameOver = true;
+
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("pacmanHigh", highScore);
+        document.getElementById("high").textContent = highScore;
+    }
+
+    setTimeout(() => {
+        alert(won ? "You ate all the dots! You win! 🟡" : "Game over! 👻");
+    }, 100);
+}
+
+function winGame() {
+    endGame(true);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw map
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const x = c * tileSize;
+            const y = r * tileSize;
+            const cell = map[r][c];
+
+            if (cell === "#") {
+                ctx.fillStyle = "#0011aa";
+                ctx.fillRect(x, y, tileSize, tileSize);
+            } else {
+                ctx.fillStyle = "#000020";
+                ctx.fillRect(x, y, tileSize, tileSize);
+
+                if (cell === ".") {
+                    ctx.fillStyle = "#ffeb3b";
+                    ctx.beginPath();
+                    ctx.arc(
+                        x + tileSize / 2,
+                        y + tileSize / 2,
+                        3,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+            }
+        }
+    }
+
+    // Draw player
+    let px = player.col * tileSize + tileSize / 2;
+    let py = player.row * tileSize + tileSize / 2;
+    ctx.fillStyle = "#ffeb3b";
+    ctx.beginPath();
+    ctx.arc(px, py, tileSize / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw ghost
+    let gx = ghost.col * tileSize + tileSize / 2;
+    let gy = ghost.row * tileSize + tileSize / 2;
+    ctx.fillStyle = "#ff4081";
+    ctx.beginPath();
+    ctx.arc(gx, gy, tileSize / 2 - 2, Math.PI, 0);
+    ctx.lineTo(gx + (tileSize / 2 - 2), gy + (tileSize / 2 - 2));
+    ctx.lineTo(gx - (tileSize / 2 - 2), gy + (tileSize / 2 - 2));
+    ctx.closePath();
+    ctx.fill();
+}
+
+function loop() {
+    if (!gameOver) {
+        movePlayer();
+        moveGhost();
+        checkCollision();
+        draw();
+    }
+    requestAnimationFrame(loop);
+}
+
+// Start
+draw();
+loop();
+</script>
+
+</body>
+</html>
