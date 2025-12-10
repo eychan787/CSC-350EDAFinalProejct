@@ -64,6 +64,7 @@ $reviews = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reviews - EDA Games</title>
     <style>
+        .background-color{#0a0101ff;}
         body { font-family: Arial, sans-serif; margin: 20px; }
         textarea, select { width: 100%; }
         textarea { height: 100px; }
@@ -78,8 +79,8 @@ $reviews = $stmt->fetchAll();
 <body>
 
 <h1 align="center">User Reviews</h1>
-<a href="userhomepage.html">Home</a> 
-<a href="logout.php">Logout</a>
+<a href="userhomepage.html" align="center">Home</a> 
+<a href="logout.php" align="center">Logout</a>
 
 
 <!-- Review Form -->
@@ -94,9 +95,12 @@ $reviews = $stmt->fetchAll();
         <label for="game">Select Game:</label><br>
         <select name="game" id="game" required>
             <option value="">--Choose a game--</option>
-            <option value="Block Breaker">Block Breaker</option>
-            <option value="Game 2">Game 2</option>
-            <option value="Game 3">Game 3</option>
+            <option value="Blackjack">Blackjack</option>
+            <option value="connect4">connect4</option>
+            <option value="Hangman">Hangman</option>
+            <option value="Tic Tac Toe">Tic Tac Toe</option>
+            <option value="rock paper scissors">rock paper scissors</option>
+            <option value="pacman">pacman</option>
         </select><br><br>
 
         <label for="review">Review:</label><br>

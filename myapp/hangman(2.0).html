@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hangman – Sentence Edition</title>
+    <style>
+        body {
+            background: #000;
+            color: #58fb00;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #phrase {
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            margin: 15px 0;
+        }
+        #letters button {
+            margin: 3px;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid #58fb00;
+            background: #000;
+            color: #58fb00;
+            cursor: pointer;
+        }
+        #letters button:disabled {
+            border-color: #444;
+            color: #444;
+            cursor: default;
+        }
+        #hangman {
+            white-space: pre;
+            font-family: "Courier New", monospace;
+            margin: 10px auto;
+        }
+        #status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #newGameBtn {
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #58fb00;
+            background: #000;
+            color: #58fb00;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hangman – Sentence Edition</h1>
+    <div id="hangman"></div>
+    <div>Wrong guesses left: <span id="wrongLeft"></span></div>
+    <div>Guessed letters: <span id="guessedLetters"></span></div>
+    <div id="phrase"></div>
+    <div id="letters"></div>
+    <div id="status"></div>
+    <button id="newGameBtn">New Game</button>
+
+<p><a href="userhomepage.html">⬅ Back to Arcade</a></p>
+
+    <script>
+        const phrases = [
+            "HELLO WORLD",
+            "I LOVE PIZZA",
+            "C PLUS PLUS IS FUN",
+            "TODAY IS A GOOD DAY",
+            "I LIKE VIDEO GAMES",
+            "PROGRAMMING IS COOL",
+            "THE SKY IS BLUE",
+            "CATS ARE VERY CUTE",
+            "DOGS ARE MY FRIENDS",
+            "I ENJOY LEARNING CODE",
+            "READING BOOKS IS FUN",
+            "I DRINK WATER DAILY",
+            "SCHOOL CAN BE FUN",
+            "MATH IS CHALLENGING",
+            "PRACTICE MAKES PERFECT",
+            "I LIKE TO LISTEN TO MUSIC",
+            "STAY POSITIVE AND SMILE",
+            "NEVER GIVE UP ON DREAMS",
+            "LEARNING NEW THINGS IS GREAT",
+            "HARD WORK PAYS OFF"
+        ];
+function loadInt(key, defVal) {
+    const v = localStorage.getItem(key);
+    return v !== null ? parseInt(v, 10) : defVal;
+}
+function saveInt(key, val) {
+    localStorage.setItem(key, String(val));
+}
+
+let hangmanWins   = loadInt("hangman_wins", 0);
+let hangmanLosses = loadInt("hangman_losses", 0);
+
+        const MAX_WRONG = 7;
+
+        const hangmanStages = [
+`  +----+
+  |    |
+  |
+  |
+  |
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |
+  |
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |    |
+  |
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |   /|
+  |
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |   /|\\
+  |
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |   /|\\
+  |   /
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |   /|\\
+  |   / \\
+ _|_`,
+
+`  +----+
+  |    |
+  |    O
+  |   /|\\
+  |   / \\
+ _|_
+ GAME OVER`
+        ];
+
+        let secretPhrase = "";
+        let guessed = new Set();
+        let wrongGuesses = 0;
+
+        const phraseEl = document.getElementById("phrase");
+        const lettersEl = document.getElementById("letters");
+        const wrongLeftEl = document.getElementById("wrongLeft");
+        const guessedLettersEl = document.getElementById("guessedLetters");
+        const statusEl = document.getElementById("status");
+        const hangmanEl = document.getElementById("hangman");
+        const newGameBtn = document.getElementById("newGameBtn");
+
+        function pickRandomPhrase() {
+            const index = Math.floor(Math.random() * phrases.length);
+            return phrases[index];
+        }
+
+        function updateDisplay() {
+            // update hangman drawing
+            hangmanEl.textContent = hangmanStages[wrongGuesses];
+
+            // update wrong guesses left
+            wrongLeftEl.textContent = (MAX_WRONG - wrongGuesses);
+
+            // update guessed letters
+            guessedLettersEl.textContent = Array.from(guessed).join(" ");
+
+            // update phrase display
+            let display = "";
+            for (const ch of secretPhrase) {
+                if (/[A-Z]/.test(ch)) {
+                    display += guessed.has(ch) ? ch + " " : "_ ";
+                } else {
+                    display += ch + " ";
+                }
+            }
+            phraseEl.textContent = display.trim();
+
+            // check win/lose
+            if (isSolved()) {
+                statusEl.textContent = "You solved it! 🎉";
+                disableAllLetters();
+            } else if (wrongGuesses >= MAX_WRONG) {
+                statusEl.textContent = "You are out of guesses! Phrase: " + secretPhrase;
+                disableAllLetters();
+            } else {
+                statusEl.textContent = "";
+            }
+        }
+
+        function isSolved() {
+            for (const ch of secretPhrase) {
+                if (/[A-Z]/.test(ch) && !guessed.has(ch)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function createLetterButtons() {
+            lettersEl.innerHTML = "";
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (const ch of alphabet) {
+                const btn = document.createElement("button");
+                btn.textContent = ch;
+                btn.addEventListener("click", () => handleGuess(ch, btn));
+                lettersEl.appendChild(btn);
+            }
+        }
+
+        function disableAllLetters() {
+            const buttons = lettersEl.querySelectorAll("button");
+            buttons.forEach(b => b.disabled = true);
+        }
+
+        function handleGuess(ch, btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            guessed.add(ch);
+
+            let found = false;
+            for (const c of secretPhrase) {
+                if (c === ch) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                wrongGuesses++;
+            }
+            updateDisplay();
+        }
+
+        function newGame() {
+            secretPhrase = pickRandomPhrase();
+            guessed = new Set();
+            wrongGuesses = 0;
+            createLetterButtons();
+            updateDisplay();
+        }
+
+        newGameBtn.addEventListener("click", newGame);
+
+        // start first game
+        newGame();
+    </script>
+</body>
+</html>
