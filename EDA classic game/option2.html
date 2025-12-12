@@ -6,6 +6,12 @@
     <title>EDA Games – Home</title>
     <link rel="stylesheet" href="style/style.css">
     <style>
+         body {
+            background: #000;
+            color: #58fb00;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
         .home-container {
             max-width: 700px;
             margin: 40px auto;
@@ -25,6 +31,29 @@
             background-color: #58fb00;
             color: #000;
         }
+
+        /* Slime GIF row styling */
+        .slime-row {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .slime-row img {
+            width: 120px;
+        }
+
+        /* Large GIF styling */
+        .big-gif {
+            margin-top: 30px;
+        }
+
+        .big-gif img {
+            width: 300px;   /* Increase or decrease as you like */
+            border-radius: 10px; /* optional aesthetic touch */
+        }
+
     </style>
 </head>
 <body id="background-color">
@@ -39,12 +68,28 @@
     </table>
 
     <div class="home-container" id="text-color">
-        <p>Welcome to EDA Games, a small web arcade with simple browser games.</p>
+        <p>Welcome to EDA Games, a web arcade with BEST TO PLAY CLASSIC GAMES!</p>
         <p>Play Connect 4, Pac-Man, Hangman, Tic-Tac-Toe, Rock–Paper–Scissors, and Blackjack.</p>
         <a class="btn-big" href="option2(1).html">Enter the Arcade</a>
+
+        <!-- ⭐ SLIME GIF ROW ⭐ -->
+        <div class="slime-row">
+            <img src="https://cdna.artstation.com/p/assets/images/images/050/232/316/original/lucas-luel-spr-green-slime-walking-left.gif?1654367134" 
+                 alt="Slime walking left">
+
+            <img src="https://cdnb.artstation.com/p/assets/images/images/050/232/305/original/lucas-luel-spr-green-slime-walking-down.gif?1654367120" 
+                 alt="Slime walking down">
+
+            <img src="https://cdnb.artstation.com/p/assets/images/images/050/232/307/original/lucas-luel-spr-green-slime-walking-right.gif?1654367125" 
+                 alt="Slime walking right">
+        </div>
+
+        <!-- ⭐ BIG GIF UNDERNEATH ⭐ -->
+        <div class="big-gif">
+            <img src="https://i.pinimg.com/originals/8c/53/28/8c5328e8d216b1db5bbb658f06ce478b.gif" 
+                 alt="Large Slime Animation">
+        </div>
+
     </div>
 </body>
 </html>
-
-
-   
